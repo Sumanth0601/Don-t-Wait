@@ -55,3 +55,4 @@ for link in deals:
     if not link.startswith("http"):
         link = "https://" + link
     webbrowser.open(link)
+    break
