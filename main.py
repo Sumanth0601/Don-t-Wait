@@ -40,10 +40,10 @@ for item in data:
     link = soup.find('a', attrs={'aria-label': 'Buy button main card'})['href']
     parsed_url = urlparse(link)
     query_params = parse_qs(parsed_url.query)
-
+    print(link)
     # Extract and decode the 'link' parameter
-    raw_flipkart_url = query_params.get('link', [None])[0]
-    final_url = unquote(raw_flipkart_url) if raw_flipkart_url else None
+    raw_url = query_params.get('link', [None])[0]
+    final_url = unquote(raw_url) if raw_url else None
     deals.append(final_url)
 
 with open ('text.txt','w') as file:
