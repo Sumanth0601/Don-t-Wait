@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from urllib.parse import urlparse, parse_qs, unquote
+from telegram import Telegram
 
 data = []
 for num in range(1,11,1):
@@ -29,7 +30,6 @@ for num in range(1,11,1):
         if original_price>=5000 and (original_price//current_price)>=1.8:
             data.append([href, current_price, original_price])
 
-
 deals = []
 # Extracting the actual web link
 for item in data: 
@@ -40,19 +40,22 @@ for item in data:
     link = soup.find('a', attrs={'aria-label': 'Buy button main card'})['href']
     parsed_url = urlparse(link)
     query_params = parse_qs(parsed_url.query)
-    print(link)
+
     # Extract and decode the 'link' parameter
     raw_url = query_params.get('link', [None])[0]
     final_url = unquote(raw_url) if raw_url else None
-    deals.append(final_url)
+    if 'amazon' in final_url:
+        deals.append((final_url+'?tag=sumanth0bc-21', item[1], item[2]))
+    else:
+        deals.append((final_url, item[1], item[2]))
 
 with open ('text.txt','w') as file:
     file.write(str(deals))
 
-import webbrowser
 
-for link in deals:
+telegram_bot = Telegram()
+for link, current_price, original_price in deals:
     if not link.startswith("http"):
         link = "https://" + link
-    webbrowser.open(link)
-    break
+    # webbrowser.open(link)
+    telegram_bot.send_telegram_message(link, current_price, original_price)
